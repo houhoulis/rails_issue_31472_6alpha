@@ -5,44 +5,50 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
     @article = articles(:one)
   end
 
-  test "should get index" do
-    get articles_url
-    assert_response :success
-  end
-
-  test "should get new" do
-    get new_article_url
-    assert_response :success
-  end
-
-  test "should create article" do
-    assert_difference('Article.count') do
-      post articles_url, params: { article: { body: @article.body, title: @article.title } }
-    end
-
-    assert_redirected_to article_url(Article.last)
-  end
-
-  test "should show article" do
+  test "get article_url(@article) should show article" do
     get article_url(@article)
     assert_response :success
   end
 
-  test "should get edit" do
-    get edit_article_url(@article)
-    assert_response :success
+  test "article_url raises with no argument" do
+    assert_raises(ActionController::UrlGenerationError) {
+      get article_url
+    }
+  end
+  test "example from issue #31472 raises error: get article_url, params: { id: @article.id }, ..." do
+    assert_raises(ActionController::UrlGenerationError) {
+      get article_url, params: { id: @article.id }, headers: { 'HTTP_REFERER' => 'http://example.com/home' }
+    }
+  end
+  test "get article_url(@article), params: { id: @article.id }, ..." do
+    get article_url(@article), params: { id: @article.id }, headers: { 'HTTP_REFERER' => 'http://example.com/home' }
+  end
+  test "raises error: get article_url, params: { article: { id: @article.id } }, ..." do
+    assert_raises(ActionController::UrlGenerationError) {
+      get article_url, params: { article: { id: @article.id } }, headers: { 'HTTP_REFERER' => 'http://example.com/home' }
+    }
+  end
+  test "get article_url(@article), params: { article: { id: @article.id } }, ..." do
+    get article_url(@article), params: { article: { id: @article.id } }, headers: { 'HTTP_REFERER' => 'http://example.com/home' }
   end
 
-  test "should update article" do
+  test "patch article_url(@article) should update article" do
     patch article_url(@article), params: { article: { body: @article.body, title: @article.title } }
     assert_redirected_to article_url(@article)
   end
 
-  test "should destroy article" do
-    assert_difference('Article.count', -1) do
-      delete article_url(@article)
-    end
-
-    assert_redirected_to articles_url
+  test "raises error: patch article_url, params: { article: { ... " do
+    assert_raises(ActionController::UrlGenerationError) {
+      patch article_url, params: { article: { id: @article.id, body: @article.body, title: @article.title } }
+    }
   end
+  test "raises_error: patch article_url, params: { id: @article.id }, xhr: true" do
+    assert_raises(ActionController::UrlGenerationError) {
+      patch article_url, params: { id: @article.id }, xhr: true
+    }
+  end
+  # test "raises a ParamMissing error: patch article_url(@article), params: { id: @article.id }, xhr: true" do
+  #   patch article_url(@article), params: { id: @article.id }, xhr: true
+  # end
+
 end
